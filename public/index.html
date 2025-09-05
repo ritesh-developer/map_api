@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Leaflet Map Example</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Leaflet CSS -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet/dist/leaflet.css"
+  />
+  <style>
+    #map {
+      height: 100vh;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="map"></div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<script>
+  const map = L.map('map').setView([28.5355, 77.3910], 12); // Center on Noida
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
+
+  // Load existing markers, but skip 'Pinned Location'
+  fetch('/api/locations')
+    .then(res => res.json())
+    .then(locations => {
+      locations.forEach(location => {
+        if (location.name === 'Pinned Location') return; // skip user pins
+        L.marker([location.lat, location.lng])
+          .addTo(map)
+          .bindPopup(`<b>${location.name}</b><br>${location.description}`);
+      });
+    });
+
+  // Only one marker at a time for user clicks
+  let userMarker = null;
+  map.on('click', function (e) {
+    const { lat, lng } = e.latlng;
+
+    // Remove previous marker if it exists
+    if (userMarker) {
+      map.removeLayer(userMarker);
+    }
+
+    // Reverse geocode to get address
+    fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`)
+      .then(res => res.json())
+      .then(data => {
+        const address = data.display_name || 'No address found';
+        // Show marker + popup with address
+        userMarker = L.marker([lat, lng]).addTo(map);
+        userMarker.bindPopup(`<b>Pinned at:</b><br>Lat: ${lat.toFixed(5)}<br>Lng: ${lng.toFixed(5)}<br><b>Address:</b><br>${address}`).openPopup();
+
+        // Send to backend for saving (optional)
+        fetch('/api/save-location', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            name: 'Pinned Location',
+            lat,
+            lng,
+            description: address
+          })
+        }).then(res => {
+          if (res.ok) {
+            console.log('Location saved successfully.');
+          } else {
+            console.error('Failed to save location.');
+          }
+        });
+      });
+  });
+</script>
+
+</body>
+</html>

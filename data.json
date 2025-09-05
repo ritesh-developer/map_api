@@ -1,0 +1,14 @@
+[
+  {
+    "name": "London",
+    "lat": 51.505,
+    "lng": -0.09,
+    "description": "Capital of the UK"
+  },
+  {
+    "name": "Pinned Location",
+    "lat": 28.462614722634864,
+    "lng": 77.49021500970123,
+    "description": "Noida Institute of Engineering and Technology (Old Campus), Plot No. 19, Noida-Greater Noida Expressway, Greater Noida, Gautam Buddha Nagar, Uttar Pradesh, 201306, India"
+  }
+]
