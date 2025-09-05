@@ -42,3 +42,9 @@ This project is a Node.js web application that displays an interactive map using
 - Only permanent locations are shown after a page reload; user pins are not persistent.
 - Make sure your `index.html` is inside the `public` folder for the server to serve it correctly.
 
+## Screenshot
+
+<img width="1891" height="962" alt="image" src="https://github.com/user-attachments/assets/11de9bce-fdd4-4fbc-b177-f62592f05756" />
+
+
+
